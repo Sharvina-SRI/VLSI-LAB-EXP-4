@@ -26,7 +26,6 @@ Vivado 2023.1
 
 9. View Results: After the simulation completes, you can view waveforms, debug signals, and analyze the behavior of your design.
 
-
 Spartan6 FPGA
 
 ## LOGIC DIAGRAM
@@ -81,144 +80,160 @@ Double click on the Implement Design and double click on the Generate Programmin
 On the board, by giving required input, the LEDs starts to glow light, indicating the output.
 
 ## VERILOG CODE
-
-## D Flip Flop
 ```
-module DFlipFlop (D, clk, reset, Q) ;
-input D;
-input clk;
-input reset; 
-output reg Q; 
-always @ (posedge clk)
+DEVELOPED BY: SHARVINA SRI
+REGISTER NUMBER: 212222060238
+```
+## SR FLIPFLOP:
+```
+module srff(s,r,clk,rst,q);
+input s,r,clk,rst;
+output reg q;
+always@(posedge clk)
 begin
-    if(reset == 1'b1)
-        Q <= 1'b0;
-    else
-        Q <= D;
+if(rst==1)
+q=0;
+else
+begin
+case({s,r})
+2'b00:q=q;
+2'b01:q=0;
+2'b10:q=1;
+2'b11:q=1'bX;
+endcase
+end
 end
 endmodule
 ```
-## JK Flip Flop
+## JK FLIPFLOP:
 ```
-module JK_flipflop (q, q_bar, j,k, clk, reset);
-  input j,k,clk, reset;
-  output reg q;
-  output q_bar;
-  always@(posedge clk) begin
-    if(!reset)        q <= 0;
-    else 
-  begin
-      case({j,k})
-        2'b00: q <= q;  
-        2'b01: q <= 1'b0; 
-        2'b10: q <= 1'b1;
-        2'b11: q <= ~q; 
-      endcase
-    end
-  end
-  assign q_bar = ~q;
-endmodule
-```
-## SR Flip Flop
-```
-module SR_flipflop (q, q_bar, s,r, clk, reset);
-  input s,r,clk, reset;
-  output reg q;
-  output q_bar;
-  always@(posedge clk) begin 
-    if(!reset)        q <= 0;
-    else 
-  begin
-      case({s,r})
-        2'b00: q <= q;    
-        2'b01: q <= 1'b0; 
-        2'b10: q <= 1'b1; 
-        2'b11: q <= 1'bx; 
-      endcase
-    end
-  end
-  assign q_bar = ~q;
-endmodule
-```
-## T Flip Flop
-```
-module tff (t,clk, rstn,q);  
- input t,clk, rstn;
- output reg q;
-  always @ (posedge clk) begin  
-    if (!rstn)  
-      q <= 0;  
-    else  
-        if (t)  
-            q <= ~q;  
-        else  
-            q <= q;  
-  end  
-endmodule
-```
-## Ripple Carry Counter
-```
-module D_FF(q, d, clk, reset);
-output q;
-input d, clk, reset;
-reg q;
-always @(posedge reset or negedge clk)
-if (reset)
-q = 1'b0;
+module jkff(j,k,clk,rst,q);
+input j,k,clk,rst;
+output reg q;
+always@(posedge clk)
+begin
+if(rst==1)
+q=0;
 else
-q = d;
+begin
+case({j,k})
+2'b00:q=q;
+2'b01:q=0;
+2'b10:q=1;
+2'b11:q=~q;
+endcase
+end
+end
 endmodule
-module T_FF(q, clk, reset);
+```
+## T FLIPFLOP:
+```
+module tff(clk,rst,t,q);
+input clk,rst,t;
+output reg q;
+always @(posedge clk)
+begin
+if (rst==1)
+q=1'b0;
+else if (t==0)
+q=q;
+else
+q=~q;
+end
+endmodule
+```
+## D FLIPFLOP:
+```
+module dff(d,clk,rst,q);
+input d,clk,rst;
+output reg q;
+always @(posedge clk)
+begin
+if (rst==1)
+q=1'b0;
+else
+q=d;
+end
+endmodule
+```
+## COUNTER:
+#### Updown Counter:
+```
+module updown(clk,rst,updown,out);
+input clk,rst,updown;
+output reg [3:0]out;
+always@(posedge clk)
+begin
+if (rst==1)
+out=4'b0000;
+else if(updown==1)
+out=out+1;
+else
+out=out-1;
+end
+endmodule
+```
+#### Mod 10 Counter:
+```
+module mod10(clk,rst,out);
+input clk,rst;
+output reg [3:0]out;
+always@(posedge clk)
+begin
+if (rst==1 | out==4'b1001)
+out=4'b0000;
+else
+out=out+1;
+end
+endmodule
+```
+#### Ripple Counter:
+```
+module tff(q,clk,rst);
+input clk,rst;
 output q;
-input clk, reset;
 wire d;
-D_FF dff0(q, d, clk, reset);
-not n1(d, q); 
+dff df1(q,d,clk,rst);
+not n1(d,q);
 endmodule
-module ripple_carry_counter(q, clk, reset);
-output [3:0] q;
-input clk, reset;
-T_FF tffo(q[0], clk, reset);
-T_FF tff1(q[1], q[0], reset);
-T_FF tff2(q[2], q[1], reset);
-T_FF tff3(q[3], q[2], reset);
-endmodule
-```
-## MOD 10 Counter
-```
-module counter(
-input clk,rst,enable,
-output reg [3:0]counter_output
-);
-always@ (posedge clk)
-begin 
-if( rst | counter_output==4'b1001)
-counter_output <= 4'b0000;
-else if(enable)
-counter_output <= counter_output + 1;
-else
-counter_output <= 0;
+
+module dff(q,d,clk,rst);
+input d,clk,rst;
+output q;
+reg q;
+always @(posedge clk or posedge rst)
+begin
+if (rst)
+q=1'b0;
+else 
+q=d;
 end
 endmodule
+
+module ripplecounter(clk,rst,q);
+input clk,rst;
+output [3:0]q;
+tff tf1(q[0],clk,rst);
+tff tf3(q[2],q[1],rst);
+tff tf4(q[3],q[2],rst);
+endmodule
 ```
+## Output Waveform:
+## SR FLIPFLOP:
+![image](https://github.com/Sharvina-SRI/VLSI-LAB-EXP-4/assets/162664906/47473d68-9136-4e68-8027-82264d94eee9)
+## JK FLIPFLOP:
+![image](https://github.com/Sharvina-SRI/VLSI-LAB-EXP-4/assets/162664906/a284273b-00c4-4792-a0da-cd16cb6c7eac)
+## T FLIPFLOP:
+![image](https://github.com/Sharvina-SRI/VLSI-LAB-EXP-4/assets/162664906/7b0e8cc2-500d-4556-bab9-18cabfc8ecc4)
+## D FLIPFLOP:
+![image](https://github.com/Sharvina-SRI/VLSI-LAB-EXP-4/assets/162664906/d1367a46-fab5-4c66-84c9-1decdcb823cc)
+## COUNTER:
+#### Updown Counter:
+![image](https://github.com/Sharvina-SRI/VLSI-LAB-EXP-4/assets/162664906/2e5bad24-7543-4bcc-8171-ed69ea581316)
+#### Mod 10 Counter:
+![image](https://github.com/Sharvina-SRI/VLSI-LAB-EXP-4/assets/162664906/8816b4c6-873d-463c-963e-f2b2484d228b)
+#### Ripple Counter:
+![image](https://github.com/Sharvina-SRI/VLSI-LAB-EXP-4/assets/162664906/e3e6d75b-67ef-4ae3-8146-ea76d920bfeb)
 
-## OUTPUT WAVEFORM
-
-### D Flip Flop
-
-![D Flip Flop](https://github.com/RCKcharan10/VLSI-LAB-EXP-4/assets/117891438/0aeeb1ce-64b7-48e0-bcbd-efbf6bf0010d)
-
-### JK Flip flop
-
-![JK Flip flop](https://github.com/RCKcharan10/VLSI-LAB-EXP-4/assets/117891438/f58c6b39-81b3-400f-b2e6-5df43dd4f4ce)
-
-### SR Flip Flop
-
-![SR Flip Flop](https://github.com/RCKcharan10/VLSI-LAB-EXP-4/assets/117891438/c3f2b9c5-897f-48ef-b12d-2f446de70cb8)
-
-### T Flip FLop
-
-![T Flip Flop](https://github.com/RCKcharan10/VLSI-LAB-EXP-4/assets/117891438/5bae902d-bc9e-48f1-b32c-fdb06441a797)
-
-## RESULT:
-Thus the simulation and implementation of sequential logic gates is done and verified.
+## Result:
+Hence, the stimulation and synthesis of a SR flipflop, JK flipflop, T flipflop, D flipflop, Counter was run successfully by using Xilinx ISE.
