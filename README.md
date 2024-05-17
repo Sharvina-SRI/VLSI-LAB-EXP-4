@@ -1,4 +1,5 @@
-# VLSI-LAB-EXP-4
+#### Experiment number: 04
+#### Date:
 # SIMULATION AND IMPLEMENTATION OF SEQUENTIAL LOGIC CIRCUITS
 
 ## AIM: 
